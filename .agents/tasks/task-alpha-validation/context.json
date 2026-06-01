@@ -1,0 +1,25 @@
+{
+  "project_type": "Python quantitative finance library with 100 strategies, 100 algorithms, backtesting engine, and portfolio construction",
+  "language": "Python 3.11",
+  "build_system": "setuptools via pyproject.toml, pip install -e '.[dev]'",
+  "test_framework": "pytest with conftest.py fixtures (sample_ohlcv, sample_prices, sample_returns, sample_signals)",
+  "build_command": "pip install -e '.[dev]'",
+  "test_command": "pytest tests/ -v --tb=short",
+  "verification_instructions": "1. Run pip install -e '.[dev]' to install. 2. Run pytest tests/ -v --tb=short. All tests must pass.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "pip install -e '.[dev]'",
+  "environment_constraints": "OPEN_INTERNET network mode. Python 3.11 default. numpy, pandas, scipy, scikit-learn, statsmodels, cvxpy available.",
+  "contribution_requirements": "Type hints required. NumPy-style docstrings. from __future__ import annotations. Strategy extends Strategy base, Algorithm extends Algorithm base. Tests on synthetic data.",
+  "key_patterns": "Modular subpackages under src/quant_portfolio/. Each module has __init__.py with exports. BacktestResult dataclass has: returns (pd.Series), equity_curve (pd.Series), positions (pd.DataFrame with 'position' column), trades (pd.DataFrame), metrics (Dict[str,float]). Existing metrics.py has standalone functions. Tests use pytest fixtures from conftest.py. Registry pattern via __init_subclass__.",
+  "relevant_files": [
+    "src/quant_portfolio/backtesting/engine.py",
+    "src/quant_portfolio/backtesting/metrics.py",
+    "src/quant_portfolio/backtesting/__init__.py",
+    "src/quant_portfolio/portfolio/risk.py",
+    "src/quant_portfolio/__init__.py",
+    "tests/conftest.py",
+    "tests/test_backtest_engine.py",
+    "pyproject.toml"
+  ],
+  "directory_structure": "src/quant_portfolio/ - main package; strategies/ - 100 strategies in 8 categories; algorithms/ - 100 algorithms in 7 categories; backtesting/ - engine.py + metrics.py; portfolio/ - constructor.py + risk.py; data/ - baostock_provider.py + data_utils.py; tests/ - pytest test files; examples/ - usage scripts; docs/ - markdown docs"
+}

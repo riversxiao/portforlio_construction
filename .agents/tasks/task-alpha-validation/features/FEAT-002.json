@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Add comprehensive tests for the Alpha Validation module and an example script demonstrating usage with the existing backtesting engine.",
+  "status": "completed",
+  "steps": [
+    "Create tests/test_alpha_validation.py with comprehensive tests: TestDimensionEvaluators class testing each of the 8 evaluators individually with synthetic data; TestAlphaValidator class testing end-to-end validation flow; TestValidationConfig testing custom configs; TestValidationReport testing report generation and summary.",
+    "Tests should use the existing conftest.py fixtures (sample_ohlcv, sample_returns) and create BacktestResult instances to feed into AlphaValidator.",
+    "Test edge cases: constant returns (zero volatility), very short return series, all-positive returns, all-negative returns, no trades (positions always 0).",
+    "Test that passing a benchmark_returns argument activates Treynor ratio, Information ratio, and Jensen's alpha calculations.",
+    "Test that passing existing_alpha_returns to validate() computes correlation/independence metrics correctly.",
+    "Test custom ValidationConfig: verify that changing thresholds affects pass/fail results.",
+    "Create examples/alpha_validation.py demonstrating: (1) running a backtest with an existing strategy, (2) validating the result with AlphaValidator, (3) printing the multi-dimensional report, (4) showing how to customize thresholds.",
+    "Ensure all new tests pass: pytest tests/test_alpha_validation.py -v --tb=short"
+  ],
+  "acceptance_criteria": [
+    "pytest tests/test_alpha_validation.py -v passes all tests (at least 15 test cases covering all dimensions)",
+    "pytest tests/ -v --tb=short passes all tests including the new ones (no regressions)",
+    "examples/alpha_validation.py runs without errors: python examples/alpha_validation.py",
+    "Edge case tests confirm no crashes on degenerate inputs (constant returns, empty data, etc.)"
+  ],
+  "verification": [
+    "Run pytest tests/test_alpha_validation.py -v --tb=short",
+    "Run pytest tests/ -v --tb=short to confirm no regressions",
+    "Run python examples/alpha_validation.py to confirm example works"
+  ],
+  "blocked_reason": null,
+  "findings": "All 31 new tests pass. Full test suite (298 tests) passes with no regressions. Example script runs successfully. The simple_momentum strategy fails validation on synthetic data (score 37.9/100) which is expected behavior - demonstrates the validator correctly identifies weak alphas."
+}
