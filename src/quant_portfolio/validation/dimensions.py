@@ -58,12 +58,16 @@ class ReturnAbilityEvaluator:
         gross_profits = float(wins.sum()) if len(wins) > 0 else 0.0
         gross_losses = float(abs(losses.sum())) if len(losses) > 0 else 0.0
         profit_factor = (
-            gross_profits / gross_losses if gross_losses > 0 else 0.0
+            gross_profits / gross_losses if gross_losses > 0
+            else (10.0 if gross_profits > 0 else 0.0)
         )
 
         avg_win = float(wins.mean()) if len(wins) > 0 else 0.0
         avg_loss = float(abs(losses.mean())) if len(losses) > 0 else 0.0
-        avg_win_loss_ratio = avg_win / avg_loss if avg_loss > 0 else 0.0
+        avg_win_loss_ratio = (
+            avg_win / avg_loss if avg_loss > 0
+            else (10.0 if avg_win > 0 else 0.0)
+        )
 
         metrics: Dict[str, float] = {
             "total_return": total_return,
@@ -222,7 +226,16 @@ class RiskAdjustedEvaluator:
 
 
 class TransactionCostEvaluator:
-    """Evaluates transaction cost and turnover characteristics."""
+    """Evaluates transaction cost and turnover characteristics.
+
+    Notes
+    -----
+    The metrics ``estimated_implementation_shortfall``, ``capacity_score``,
+    and ``market_impact_score`` are simplified estimates derived from the
+    annual turnover rate alone. They serve as placeholders for more
+    sophisticated volume-aware calculations that require order-book or
+    traded-volume data not available in a standard backtest result.
+    """
 
     def evaluate(
         self,
@@ -268,13 +281,16 @@ class TransactionCostEvaluator:
             1.0 / trade_frequency if trade_frequency > 0 else float(n_periods)
         )
 
-        # Estimated implementation shortfall (simplified)
+        # Estimated implementation shortfall (simplified: turnover-based proxy,
+        # placeholder for volume-aware calculation)
         estimated_shortfall = annual_turnover * 0.001
 
         # Capacity score: lower turnover = higher capacity
+        # (simplified: turnover-based proxy, placeholder for volume-aware calculation)
         capacity_score = _clip_score(100.0 - annual_turnover * 2.0)
 
         # Market impact score
+        # (simplified: turnover-based proxy, placeholder for volume-aware calculation)
         market_impact_score = _clip_score(100.0 - annual_turnover * 1.5)
 
         metrics: Dict[str, float] = {
@@ -527,7 +543,7 @@ class IndependenceEvaluator:
         factor_corrs: Dict[str, float] = {}
         if benchmark_returns is not None and len(benchmark_returns) > 0:
             factor_corrs["market"] = corr_market
-        metrics["factor_correlations"] = float(abs(corr_market))
+        metrics["abs_market_correlation"] = float(abs(corr_market))
 
         # Marginal contribution
         if (
@@ -699,9 +715,17 @@ class RobustnessEvaluator:
                 if std_2 > 0
                 else 0.0
             )
-            oos_is_ratio = (
-                sharpe_2 / sharpe_1 if abs(sharpe_1) > 1e-8 else 0.0
-            )
+            # Handle sign differences explicitly
+            if abs(sharpe_1) <= 1e-8:
+                oos_is_ratio = 0.0
+            elif sharpe_1 < 0 and sharpe_2 >= 0:
+                # Improved from negative to positive: not directly comparable
+                oos_is_ratio = 0.0
+            elif sharpe_1 < 0 and sharpe_2 < 0:
+                # Both negative: compare absolute magnitudes (lower abs = better OOS)
+                oos_is_ratio = abs(sharpe_1) / abs(sharpe_2)
+            else:
+                oos_is_ratio = sharpe_2 / sharpe_1
         else:
             oos_is_ratio = 1.0
 

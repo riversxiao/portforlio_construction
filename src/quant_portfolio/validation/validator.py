@@ -71,6 +71,17 @@ class AlphaValidator:
         returns = backtest_result.returns
         positions = backtest_result.positions
 
+        # Input validation: drop NaN values from returns
+        returns = returns.dropna()
+        if len(returns) == 0:
+            return ValidationReport(
+                overall_score=0.0,
+                overall_passed=False,
+                dimension_results=[],
+                summary="Score: 0.0/100. Returns series is empty after removing NaN values. FAILED overall validation.",
+                timestamp=datetime.now(),
+            )
+
         dimension_results = []
 
         # 1. Return ability
