@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Create project skeleton with Python packaging, core abstractions (Strategy base class, Algorithm base class), Baostock data provider, backtesting engine, and portfolio construction engine. This establishes the foundation that all strategies and algorithms will build upon.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create pyproject.toml with project metadata, dependencies (baostock, numpy, pandas, scipy, scikit-learn, statsmodels, cvxpy, matplotlib, empyrical), and dev dependencies (pytest, pytest-cov)",
     "Create src/quant_portfolio/__init__.py with version info and top-level imports",
@@ -30,5 +30,5 @@
     "cd /projects/sandbox/portforlio_construction && pytest tests/ -v"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Python 3.11 required pyenv global 3.11.15 to activate (sandbox default was 3.9). All 34 tests pass. pip install -e '.[dev]' works. Example script runs end-to-end. Used pandas 3.0+ so resample freq for month-end is 'ME' not 'M'."
 }
