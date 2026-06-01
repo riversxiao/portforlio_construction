@@ -17,7 +17,7 @@ class HierarchicalRiskParityOptimization(Algorithm):
 
     Steps:
     1. Compute distance matrix from correlations
-    2. Hierarchical clustering (single linkage)
+    2. Hierarchical clustering (Ward's method, per Lopez de Prado)
     3. Quasi-diagonalize the covariance matrix
     4. Recursive bisection for weight allocation
     """
@@ -35,8 +35,8 @@ class HierarchicalRiskParityOptimization(Algorithm):
         dist = (dist + dist.T) / 2
         condensed = squareform(dist, checks=False)
 
-        # Hierarchical clustering
-        link = linkage(condensed, method="single")
+        # Hierarchical clustering (Ward's method per Lopez de Prado)
+        link = linkage(condensed, method="ward")
         sort_ix = leaves_list(link).tolist()
 
         # Recursive bisection

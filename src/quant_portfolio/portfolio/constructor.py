@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -9,6 +10,8 @@ import pandas as pd
 
 from quant_portfolio.algorithms.base import Algorithm
 from quant_portfolio.strategies.base import Strategy
+
+logger = logging.getLogger(__name__)
 
 
 class PortfolioConstructor:
@@ -24,15 +27,21 @@ class PortfolioConstructor:
         The optimization algorithm to use for weight allocation.
     rebalance_frequency : str
         How often to rebalance: 'daily', 'weekly', 'monthly'.
+    max_signal_age : int
+        Maximum age of a signal in business days before it is considered
+        stale. If the most recent signal is older than this threshold,
+        a warning is logged and zero weights are used. Default is 5.
     """
 
     def __init__(
         self,
         algorithm: Algorithm,
         rebalance_frequency: str = "monthly",
+        max_signal_age: int = 5,
     ) -> None:
         self.algorithm = algorithm
         self.rebalance_frequency = rebalance_frequency
+        self.max_signal_age = max_signal_age
 
     def construct(
         self,
@@ -88,7 +97,27 @@ class PortfolioConstructor:
                     valid_signal_dates = signals.index[signals.index <= date]
                     if len(valid_signal_dates) == 0:
                         continue
-                    current_signals = signals.loc[valid_signal_dates[-1]]
+                    latest_signal_date = valid_signal_dates[-1]
+
+                    # Check signal staleness
+                    signal_age = np.busday_count(
+                        np.datetime64(pd.Timestamp(latest_signal_date), 'D'),
+                        np.datetime64(pd.Timestamp(date), 'D'),
+                    )
+                    if signal_age > self.max_signal_age:
+                        logger.warning(
+                            "Stale signal at %s: most recent signal is %d "
+                            "business days old (threshold: %d). Using zero "
+                            "weights.",
+                            date, signal_age, self.max_signal_age,
+                        )
+                        weights = np.zeros(len(returns.columns))
+                        weights_history.append(
+                            pd.Series(weights, index=returns.columns, name=date)
+                        )
+                        continue
+
+                    current_signals = signals.loc[latest_signal_date]
 
                 selected = current_signals[current_signals != 0].index
                 selected = selected.intersection(returns.columns)

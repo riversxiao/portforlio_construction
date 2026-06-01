@@ -2,7 +2,7 @@
 
 from quant_portfolio.strategies.ml.random_forest_strategy import RandomForestStrategy
 from quant_portfolio.strategies.ml.gradient_boosting import GradientBoosting
-from quant_portfolio.strategies.ml.lstm_strategy import LSTMStrategy
+from quant_portfolio.strategies.ml.lstm_strategy import LSTMStrategy, RecurrentWeightedStrategy
 from quant_portfolio.strategies.ml.svm_strategy import SVMStrategy
 from quant_portfolio.strategies.ml.kmeans_regime import KMeansRegime
 from quant_portfolio.strategies.ml.pca_strategy import PCAStrategy
@@ -15,6 +15,7 @@ __all__ = [
     "RandomForestStrategy",
     "GradientBoosting",
     "LSTMStrategy",
+    "RecurrentWeightedStrategy",
     "SVMStrategy",
     "KMeansRegime",
     "PCAStrategy",

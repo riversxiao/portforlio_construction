@@ -131,7 +131,8 @@ class Backtester:
         )
 
         # Compute metrics
-        metrics = self._compute_metrics(strategy_returns)
+        num_trades = int((trades_mask > 0).sum())
+        metrics = self._compute_metrics(strategy_returns, num_trades=num_trades)
 
         return BacktestResult(
             returns=strategy_returns,
@@ -145,6 +146,7 @@ class Backtester:
         self,
         returns: pd.Series,
         periods_per_year: int = 252,
+        num_trades: int = 0,
     ) -> Dict[str, float]:
         """Compute performance metrics.
 
@@ -154,6 +156,8 @@ class Backtester:
             Strategy returns series.
         periods_per_year : int
             Number of trading periods per year.
+        num_trades : int
+            Number of actual position changes (trades).
 
         Returns
         -------
@@ -170,5 +174,5 @@ class Backtester:
             "max_drawdown": max_drawdown(returns),
             "calmar_ratio": calmar_ratio(returns, periods_per_year),
             "total_return": float((1 + returns).prod() - 1),
-            "num_trades": int(returns.index.size),
+            "num_trades": num_trades,
         }
