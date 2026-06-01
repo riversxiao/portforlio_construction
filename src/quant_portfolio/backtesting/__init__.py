@@ -1,6 +1,6 @@
 """Backtesting module for strategy evaluation."""
 
-from quant_portfolio.backtesting.engine import Backtester
+from quant_portfolio.backtesting.engine import BacktestResult, Backtester
 from quant_portfolio.backtesting.metrics import (
     annualized_return,
     annualized_volatility,
@@ -11,6 +11,7 @@ from quant_portfolio.backtesting.metrics import (
 )
 
 __all__ = [
+    "BacktestResult",
     "Backtester",
     "annualized_return",
     "annualized_volatility",

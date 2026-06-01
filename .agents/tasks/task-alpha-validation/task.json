@@ -1,0 +1,7 @@
+{
+  "task_id": "task-alpha-validation",
+  "task_description": "Implement a comprehensive Alpha Validation / Alpha Effectiveness Evaluation module that evaluates whether a strategy/alpha is effective across 8 core dimensions: Return Ability, Risk-Adjusted Returns, Transaction Cost/Executability, Drawdown & Extreme Risk, Efficiency/Per-Unit Trade Quality, Independence/Correlation, Coverage/Applicability, and Robustness/Generalization. Provides an AlphaValidator class with multi-dimensional scoring and pass/fail system.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

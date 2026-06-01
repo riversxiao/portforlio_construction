@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement the core Alpha Validation module with an AlphaValidator class and 8 dimension evaluators that assess whether a strategy/alpha is 'effective' across multiple metrics.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/quant_portfolio/validation/ package directory with __init__.py",
+    "Create src/quant_portfolio/validation/dimensions.py - implement 8 dimension evaluator classes: ReturnAbilityEvaluator, RiskAdjustedEvaluator, TransactionCostEvaluator, DrawdownRiskEvaluator, EfficiencyEvaluator, IndependenceEvaluator, CoverageEvaluator, RobustnessEvaluator. Each takes returns/positions data and computes its metrics, returning a DimensionResult dataclass with: dimension_name, metrics (dict of name->value), score (0-100 float), passed (bool), details (str).",
+    "ReturnAbilityEvaluator: Compute total_return, annualized_return, cumulative_return, hit_rate (% of winning periods), profit_factor (gross profits / gross losses), avg_win_loss_ratio. Score based on configurable thresholds.",
+    "RiskAdjustedEvaluator: Compute sharpe_ratio, sortino_ratio, information_ratio, treynor_ratio (if benchmark provided), omega_ratio (threshold=0), jensens_alpha (if benchmark provided). Score based on Sharpe and Sortino primarily.",
+    "TransactionCostEvaluator: Compute annual_turnover_rate, avg_holding_period, trade_frequency, estimated_implementation_shortfall (using positions and volume data if available), capacity_estimate, market_impact_estimate. Score penalizes excessive turnover.",
+    "DrawdownRiskEvaluator: Compute max_drawdown, max_drawdown_duration, var_95, cvar_95, drawdown_recovery_ratio, underwater_time_pct, pain_index (mean of absolute drawdowns). Score based on max_drawdown and CVaR.",
+    "EfficiencyEvaluator: Compute profit_per_trade, return_per_unit_turnover, edge_ratio, expectancy, payoff_ratio. Score based on positive expectancy and efficiency ratios.",
+    "IndependenceEvaluator: Compute correlation_with_market, correlation_with_factors (size, value, momentum synthetic proxies), marginal_contribution (if existing alpha returns provided), uniqueness_score. Score rewards low correlation.",
+    "CoverageEvaluator: Compute breadth (number of securities with signal from positions), signal_coverage_over_time, sector_distribution (if sector data provided), market_cap_coverage. For single-asset backtests, report coverage=1 with appropriate scoring.",
+    "RobustnessEvaluator: Compute rolling_sharpe_stability (std of rolling Sharpe), oos_is_ratio (split returns in half, compare Sharpes), regime_stability (bull vs bear performance), bootstrap_confidence_intervals (bootstrap mean return CI), parameter_sensitivity (not applicable at validation time, report N/A).",
+    "Create src/quant_portfolio/validation/validator.py - implement AlphaValidator class: __init__ takes optional config (thresholds, weights per dimension). Method validate(backtest_result: BacktestResult, benchmark_returns: Optional[pd.Series] = None, existing_alpha_returns: Optional[pd.DataFrame] = None) runs all 8 evaluators, collects DimensionResults, computes overall_score (weighted average of dimension scores), overall_passed (bool based on configurable minimum). Returns ValidationReport dataclass.",
+    "Create src/quant_portfolio/validation/config.py - define default thresholds and weights for each dimension. Provide ValidationConfig dataclass with sensible defaults (e.g., min_sharpe=0.5, max_drawdown_threshold=-0.3, max_annual_turnover=20.0, min_overall_score=50.0).",
+    "Create src/quant_portfolio/validation/report.py - define DimensionResult and ValidationReport dataclasses. ValidationReport has: overall_score (float 0-100), overall_passed (bool), dimension_results (list of DimensionResult), summary (str), timestamp (datetime).",
+    "Update src/quant_portfolio/validation/__init__.py to export AlphaValidator, ValidationReport, ValidationConfig, DimensionResult.",
+    "Update src/quant_portfolio/__init__.py to import and export AlphaValidator from the new validation module.",
+    "Update src/quant_portfolio/backtesting/__init__.py to also export BacktestResult (it is already importable but not listed in __all__)."
+  ],
+  "acceptance_criteria": [
+    "AlphaValidator can be instantiated with default config",
+    "AlphaValidator.validate(backtest_result) returns a ValidationReport with scores for all 8 dimensions",
+    "Each dimension evaluator computes its defined metrics without errors on synthetic data",
+    "Overall score is a weighted average of dimension scores in range 0-100",
+    "overall_passed is True when overall_score >= min_overall_score threshold",
+    "Module imports cleanly: from quant_portfolio.validation import AlphaValidator, ValidationReport"
+  ],
+  "verification": [
+    "Run pytest tests/ -v --tb=short to ensure no existing tests break",
+    "Run python -c \"from quant_portfolio.validation import AlphaValidator, ValidationReport, ValidationConfig\" to verify imports"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
