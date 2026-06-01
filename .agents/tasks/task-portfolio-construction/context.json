@@ -1,0 +1,24 @@
+{
+  "project_type": "Python quantitative finance library with Baostock API integration",
+  "language": "Python 3.11",
+  "build_system": "pip with pyproject.toml, setuptools backend",
+  "test_framework": "pytest",
+  "build_command": "pip install -e . && python -c 'import quant_portfolio; print(quant_portfolio.__version__)'",
+  "test_command": "pytest tests/ -v --tb=short",
+  "verification_instructions": "1. pip install -e . 2. pytest tests/ -v 3. python examples/quick_start.py",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "pip install -e '.[dev]'",
+  "environment_constraints": "OPEN_INTERNET - full network access available. Python 3.11 default. Can install any PyPI packages.",
+  "contribution_requirements": "MIT License. Open-source friendly code with docstrings and type hints.",
+  "key_patterns": "Modular design with separate packages for strategies, algorithms, backtesting, data, and portfolio engine. Each strategy/algorithm is a class implementing a common interface.",
+  "relevant_files": [
+    "pyproject.toml",
+    "src/quant_portfolio/__init__.py",
+    "src/quant_portfolio/data/baostock_provider.py",
+    "src/quant_portfolio/strategies/base.py",
+    "src/quant_portfolio/algorithms/base.py",
+    "src/quant_portfolio/backtesting/engine.py",
+    "src/quant_portfolio/portfolio/constructor.py"
+  ],
+  "directory_structure": "src/quant_portfolio/ - main package; strategies/ - 100+ quant strategies; algorithms/ - 100+ advanced algos; backtesting/ - backtest engine; data/ - Baostock data layer; portfolio/ - portfolio construction engine; tests/ - pytest tests; examples/ - usage examples; docs/ - documentation"
+}

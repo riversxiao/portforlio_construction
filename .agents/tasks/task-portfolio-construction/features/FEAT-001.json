@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create project skeleton with Python packaging, core abstractions (Strategy base class, Algorithm base class), Baostock data provider, backtesting engine, and portfolio construction engine. This establishes the foundation that all strategies and algorithms will build upon.",
+  "status": "in_progress",
+  "steps": [
+    "Create pyproject.toml with project metadata, dependencies (baostock, numpy, pandas, scipy, scikit-learn, statsmodels, cvxpy, matplotlib, empyrical), and dev dependencies (pytest, pytest-cov)",
+    "Create src/quant_portfolio/__init__.py with version info and top-level imports",
+    "Create src/quant_portfolio/data/__init__.py and src/quant_portfolio/data/baostock_provider.py - wrapper around baostock API for fetching daily/weekly/monthly k-line data, stock lists, industry classification, and fundamental data",
+    "Create src/quant_portfolio/data/data_utils.py - utility functions for data cleaning, resampling, returns calculation, and missing data handling",
+    "Create src/quant_portfolio/strategies/__init__.py and src/quant_portfolio/strategies/base.py - abstract Strategy base class with generate_signals(data) -> DataFrame method, and a StrategyRegistry for auto-discovery",
+    "Create src/quant_portfolio/algorithms/__init__.py and src/quant_portfolio/algorithms/base.py - abstract Algorithm base class with optimize(returns, **params) -> weights method, and an AlgorithmRegistry",
+    "Create src/quant_portfolio/backtesting/__init__.py and src/quant_portfolio/backtesting/engine.py - Backtester class that takes a strategy + data, simulates trades with transaction costs, and computes performance metrics (Sharpe, Sortino, max drawdown, annual return, Calmar ratio, etc.)",
+    "Create src/quant_portfolio/backtesting/metrics.py - standalone performance metrics functions",
+    "Create src/quant_portfolio/portfolio/__init__.py and src/quant_portfolio/portfolio/constructor.py - PortfolioConstructor that combines strategy signals with algorithm optimization to produce final portfolio weights",
+    "Create src/quant_portfolio/portfolio/risk.py - risk analysis utilities (VaR, CVaR, volatility, beta, tracking error)",
+    "Create tests/__init__.py, tests/conftest.py with sample data fixtures, tests/test_data_provider.py, tests/test_backtest_engine.py, tests/test_portfolio_constructor.py",
+    "Create examples/quick_start.py showing end-to-end usage: fetch data -> apply strategy -> backtest -> construct portfolio"
+  ],
+  "acceptance_criteria": [
+    "pip install -e . succeeds without errors",
+    "python -c 'from quant_portfolio.strategies.base import Strategy; from quant_portfolio.algorithms.base import Algorithm; from quant_portfolio.backtesting.engine import Backtester; from quant_portfolio.portfolio.constructor import PortfolioConstructor' works",
+    "pytest tests/ passes with at least 10 tests covering the core framework",
+    "The Strategy base class defines a clear interface with generate_signals() method",
+    "The Algorithm base class defines a clear interface with optimize() method",
+    "The Backtester can run a simple strategy on sample data and return metrics"
+  ],
+  "verification": [
+    "cd /projects/sandbox/portforlio_construction && pip install -e '.[dev]'",
+    "cd /projects/sandbox/portforlio_construction && pytest tests/ -v"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
